@@ -74,13 +74,12 @@ def predict_auto():
         # DTI 
         dti_ratio = (loan_amount / (monthly_salary * 12)) * 100
 
-        # 特徵標準化
+        # 特徵
         user_features = scaler.transform([[monthly_salary, credit_score, np.log1p(loan_amount), dti_ratio, employment_status, assets_value]])
         risk_prediction = model.predict(user_features)[0]
         risk_levels = {0: "低", 1: "中", 2: "高"}
         risk_level = risk_levels.get(risk_prediction, "未知")
 
-        # 規則檢查
         user_data = {
             "salary": monthly_salary,
             "credit_score": credit_score,
