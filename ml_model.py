@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 import pickle
 
-# 讀取資料
+
 data = pd.read_csv('train_data.csv')
 
 # 風險等級數字化
@@ -21,24 +21,17 @@ data['Employment_Status'] = data['Employment_Status'].map(employment_mapping)
 data['Gross_Annual_Income'] = data['Monthly_Salary'] * 12
 data['DTI_Ratio'] = (data['Loan_Amount'] / data['Gross_Annual_Income']) * 100
 
-# 貸款金額對數轉換
 data['Loan_Amount_Log'] = np.log1p(data['Loan_Amount'])
 
-# 定義特徵與目標變數
 X = data[['Monthly_Salary', 'Credit_Score', 'Loan_Amount_Log', 'DTI_Ratio', 'Employment_Status', 'Assets_Value']]
 y = data['Risk_Level']
 
-# 資料標準化
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# 分層 K 折交叉驗證
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-# 初始化隨機森林模型
 model = RandomForestClassifier(class_weight='balanced', random_state=42, n_estimators=100)
-
-# 訓練與評估模型
 for train_index, test_index in skf.split(X_scaled, y):
     X_train, X_test = X_scaled[train_index], X_scaled[test_index]
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -58,7 +51,6 @@ print("特徵重要性：")
 for feature, importance in zip(feature_names, importances):
     print(f"{feature}: {importance}")
 
-# 保存模型與標準化器
 with open('model.pkl', 'wb') as model_file:
     pickle.dump(model, model_file)
 
